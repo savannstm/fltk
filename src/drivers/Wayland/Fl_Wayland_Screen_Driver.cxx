@@ -588,6 +588,23 @@ static void remove_int_vector(std::vector<int>& v, int val) {
   v.erase(v.begin()+pos);
 }
 
+// This function converts XKB key name to ASCII letter, corresponding to the letter.
+// The reason this conversion is done from the name is because it's the most accurate way to receive ASCII equivalent still accounting for the layout.
+static char fl_xkb_name_to_ascii(const char *name) {
+    static const char row_AD[] = "qwertyuiop";
+    static const char row_AC[] = "asdfghjkl";
+    static const char row_AB[] = "zxcvbnm";
+
+    int idx = (name[2] - '0') * 10 + (name[3] - '0') - 1;
+
+    switch (name[1]) {
+        case 'D': if (idx < 10) return row_AD[idx]; break;
+        case 'C': if (idx < 9)  return row_AC[idx]; break;
+        case 'B': if (idx < 7)  return row_AB[idx]; break;
+    }
+
+    return 0;
+}
 
 static int process_wld_key(struct xkb_state *xkb_state, uint32_t key,
                            uint32_t *p_keycode, xkb_keysym_t *p_sym) {
@@ -603,6 +620,14 @@ static int process_wld_key(struct xkb_state *xkb_state, uint32_t key,
     for_key_vector = '1' + (keycode - 10);
   } else if (keycode == 19) {
     for_key_vector = '0';
+  }
+  // return the ASCII key corresponding to the layout key name
+  const char* name = xkb_keymap_key_get_name(xkb_state, key);
+  if (name) {
+    int asciiSym = fl_xkb_name_to_ascii(name);
+    if (asciiSym != 0) {
+      for_key_vector = asciiSym;
+    }
   }
   if (p_keycode) *p_keycode = keycode;
   if (p_sym) *p_sym = sym;

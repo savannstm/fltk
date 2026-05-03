@@ -58,6 +58,7 @@
 #  include <X11/Xlocale.h>
 #  include <X11/Xlib.h>
 #  include <X11/keysym.h>
+#  include <X11/XKBlib.h>
 #  include "Xutf8.h"
 
 #if FLTK_USE_CAIRO
@@ -209,6 +210,24 @@ static Atom fl_NET_WM_FULLSCREEN_MONITORS;
 Atom fl_NET_WORKAREA;
 static Atom fl_NET_WM_ICON;
 static Atom fl_NET_ACTIVE_WINDOW;
+
+// This function converts XKB key name to ASCII letter, corresponding to the letter.
+// The reason this conversion is done from the name is because it's the most accurate way to receive ASCII equivalent still accounting for the layout.
+static char fl_xkb_name_to_ascii(const char *name) {
+    static const char row_AD[] = "qwertyuiop";
+    static const char row_AC[] = "asdfghjkl";
+    static const char row_AB[] = "zxcvbnm";
+
+    int idx = (name[2] - '0') * 10 + (name[3] - '0') - 1;
+
+    switch (name[1]) {
+        case 'D': if (idx < 10) return row_AD[idx]; break;
+        case 'C': if (idx < 9)  return row_AC[idx]; break;
+        case 'B': if (idx < 7)  return row_AB[idx]; break;
+    }
+
+    return 0;
+}
 
 /*
   Debug: translate Atom (number) to name: enable (1) if used below
@@ -2019,6 +2038,21 @@ int fl_handle(const XEvent& thisevent)
       // Store this so we can later know if the KP was used
       Fl::e_original_keysym = (int)keysym;
     }
+
+    static XkbDescPtr xkb_desc = NULL;
+
+    if (!xkb_desc) {
+        xkb_desc = XkbGetMap(fl_display, 0, XkbUseCoreKbd);
+        XkbGetNames(fl_display, XkbKeyNamesMask, xkb_desc);
+    }
+
+    // return the ASCII key corresponding to the layout key name
+    int ascii_keysym = fl_xkb_name_to_ascii(xkb_desc->names->keys[keycode].name);
+
+    if (ascii_keysym != 0) {
+        keysym = ascii_keysym;
+    }
+
     Fl::e_keysym = int(keysym);
 
     // replace XK_ISO_Left_Tab (Shift-TAB) with FL_Tab (modifier flags are set correctly by X11)
