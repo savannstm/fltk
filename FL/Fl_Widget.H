@@ -120,6 +120,7 @@ class FL_EXPORT Fl_Widget {
   unsigned int flags_;
   Fl_Color color_;
   Fl_Color selection_color_;
+  Fl_Color border_color_;
   uchar type_;
   uchar damage_;
   uchar box_;
@@ -199,8 +200,8 @@ protected:
         USERFLAG1       = 1<<31   ///< reserved for 3rd party extensions
   };
   void draw_box() const;
-  void draw_box(Fl_Boxtype t, Fl_Color c) const;
-  void draw_box(Fl_Boxtype t, int x,int y,int w,int h, Fl_Color c) const;
+  void draw_box(Fl_Boxtype t, Fl_Color c, Fl_Color bc) const;
+  void draw_box(Fl_Boxtype t, int x,int y,int w,int h, Fl_Color c, Fl_Color bc) const;
   void draw_backdrop() const;
 
   /** Draws a focus rectangle around the widget.
@@ -492,6 +493,11 @@ public:
       \see color(unsigned), selection_color(unsigned)
    */
   void color(Fl_Color bg, Fl_Color sel) {color_ = bg; selection_color_ = sel;}
+
+
+  void border_color(Fl_Color c) {border_color_ = c;}
+
+  Fl_Color border_color() const {return border_color_;}
 
   /** Gets the current label text.
       \return a pointer to the current label text

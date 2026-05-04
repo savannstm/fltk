@@ -301,6 +301,16 @@ void fl_embossed_box(int x, int y, int w, int h, Fl_Color c) {
   fl_rectf(x+2, y+2, w-4, h-4);
 }
 
+void fl_rectbound_border(int x, int y, int w, int h, Fl_Color bgcolor, Fl_Color bordercolor) {
+  // New algorithm (see Discussion #1089):
+  // 1) draw with adequate bg color a filled rectangle that covers also the rectangle border
+  // 2) draw with adequate border color the rectangle border overwriting what was drawn at 1)
+  Fl::set_box_color(bgcolor);
+  fl_rectf(x, y, w, h);
+  Fl::set_box_color(bordercolor);
+  fl_rect(x, y, w, h);
+}
+
 /**
   Draws a bounded rectangle with a given position, size and color.
   Equivalent to drawing a box of type FL_BORDER_BOX.
@@ -315,6 +325,16 @@ void fl_rectbound(int x, int y, int w, int h, Fl_Color bgcolor) {
   fl_rect(x, y, w, h);
 }
 #define fl_border_box fl_rectbound      /**< allow consistent naming */
+
+void fl_rectbound(int x, int y, int w, int h, Fl_Color bgcolor, Fl_Color bordercolor) {
+  // New algorithm (see Discussion #1089):
+  // 1) draw with adequate bg color a filled rectangle that covers also the rectangle border
+  // 2) draw with adequate border color the rectangle border overwriting what was drawn at 1)
+  Fl::set_box_color(bgcolor);
+  fl_rectf(x, y, w, h);
+  Fl::set_box_color(bordercolor);
+  fl_rect(x, y, w, h);
+}
 
 /**
   Draws a frame of type FL_BORDER_FRAME.
@@ -595,6 +615,19 @@ void fl_draw_box(Fl_Boxtype t, int x, int y, int w, int h, Fl_Color c) {
 }
 
 /**
+  Draws a box using given type, position, size and color.
+  \param[in] t box type
+  \param[in] x, y, w, h position and size
+  \param[in] c color
+  \param[in] bc border color (e.g. for FL_BORDER_BOX)
+*/
+void fl_draw_box_border(Fl_Boxtype t, int x, int y, int w, int h, Fl_Color c, Fl_Color bc) {
+  if (t == FL_BORDER_BOX) {
+    fl_draw_box_border(t, x, y, w, h, c, bc);
+  }
+}
+
+/**
  Draws the focus rectangle inside a box using given type, position, size and color.
  Boxes can set their own focus drawing callback. The focus frame does not
  need to be a rectangle at all, but should fit inside the shape of the box.
@@ -631,7 +664,7 @@ void fl_draw_box_focus(Fl_Boxtype bt, int x, int y, int w, int h, Fl_Color fg, F
 
 /** Draws the widget box according to its box style */
 void Fl_Widget::draw_box() const {
-  if (box_) draw_box((Fl_Boxtype)box_, x_, y_, w_, h_, color_);
+  if (box_) draw_box((Fl_Boxtype)box_, x_, y_, w_, h_, color_, border_color_);
   draw_backdrop();
 }
 /** If FL_ALIGN_IMAGE_BACKDROP is set, the image or deimage will be drawn */
@@ -646,12 +679,18 @@ void Fl_Widget::draw_backdrop() const {
   }
 }
 /** Draws a box of type t, of color c at the widget's position and size. */
-void Fl_Widget::draw_box(Fl_Boxtype t, Fl_Color c) const {
-  draw_box(t, x_, y_, w_, h_, c);
+void Fl_Widget::draw_box(Fl_Boxtype t, Fl_Color c, Fl_Color bc) const {
+  draw_box(t, x_, y_, w_, h_, c, bc);
 }
 /** Draws a box of type t, of color c at the position X,Y and size W,H. */
-void Fl_Widget::draw_box(Fl_Boxtype t, int X, int Y, int W, int H, Fl_Color c) const {
+void Fl_Widget::draw_box(Fl_Boxtype t, int X, int Y, int W, int H, Fl_Color c, Fl_Color bc) const {
   draw_it_active = active_r();
-  fl_box_table[t].f(X, Y, W, H, c);
+
+  if (t == FL_BORDER_BOX) {
+    fl_draw_box_border(t, X, Y, W, H, c, bc);
+  } else {
+    fl_box_table[t].f(X, Y, W, H, c);
+  }
+
   draw_it_active = 1;
 }

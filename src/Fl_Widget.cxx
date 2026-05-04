@@ -220,6 +220,7 @@ Fl_Widget::Fl_Widget(int X, int Y, int W, int H, const char* L) {
   box_             = FL_NO_BOX;
   color_           = FL_GRAY;
   selection_color_ = FL_GRAY;
+  border_color_    = FL_BLACK;
   when_            = FL_WHEN_RELEASE;
 
   parent_ = nullptr;
