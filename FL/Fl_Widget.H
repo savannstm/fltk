@@ -200,8 +200,8 @@ protected:
         USERFLAG1       = 1<<31   ///< reserved for 3rd party extensions
   };
   void draw_box() const;
-  void draw_box(Fl_Boxtype t, Fl_Color c, Fl_Color bc) const;
-  void draw_box(Fl_Boxtype t, int x,int y,int w,int h, Fl_Color c, Fl_Color bc) const;
+  void draw_box(Fl_Boxtype t, Fl_Color c) const;
+  void draw_box(Fl_Boxtype t, int x,int y,int w,int h, Fl_Color c) const;
   void draw_backdrop() const;
 
   /** Draws a focus rectangle around the widget.

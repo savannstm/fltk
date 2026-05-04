@@ -664,7 +664,7 @@ void fl_draw_box_focus(Fl_Boxtype bt, int x, int y, int w, int h, Fl_Color fg, F
 
 /** Draws the widget box according to its box style */
 void Fl_Widget::draw_box() const {
-  if (box_) draw_box((Fl_Boxtype)box_, x_, y_, w_, h_, color_, border_color_);
+  if (box_) draw_box((Fl_Boxtype)box_, x_, y_, w_, h_, color_);
   draw_backdrop();
 }
 /** If FL_ALIGN_IMAGE_BACKDROP is set, the image or deimage will be drawn */
@@ -679,15 +679,15 @@ void Fl_Widget::draw_backdrop() const {
   }
 }
 /** Draws a box of type t, of color c at the widget's position and size. */
-void Fl_Widget::draw_box(Fl_Boxtype t, Fl_Color c, Fl_Color bc) const {
-  draw_box(t, x_, y_, w_, h_, c, bc);
+void Fl_Widget::draw_box(Fl_Boxtype t, Fl_Color c) const {
+  draw_box(t, x_, y_, w_, h_, c);
 }
 /** Draws a box of type t, of color c at the position X,Y and size W,H. */
-void Fl_Widget::draw_box(Fl_Boxtype t, int X, int Y, int W, int H, Fl_Color c, Fl_Color bc) const {
+void Fl_Widget::draw_box(Fl_Boxtype t, int X, int Y, int W, int H, Fl_Color c) const {
   draw_it_active = active_r();
 
   if (t == FL_BORDER_BOX) {
-    fl_draw_box_border(t, X, Y, W, H, c, bc);
+    fl_draw_box_border(t, X, Y, W, H, c, border_color());
   } else {
     fl_box_table[t].f(X, Y, W, H, c);
   }
