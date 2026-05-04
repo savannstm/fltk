@@ -623,7 +623,7 @@ void fl_draw_box(Fl_Boxtype t, int x, int y, int w, int h, Fl_Color c) {
 */
 void fl_draw_box_border(Fl_Boxtype t, int x, int y, int w, int h, Fl_Color c, Fl_Color bc) {
   if (t == FL_BORDER_BOX) {
-    fl_draw_box_border(t, x, y, w, h, c, bc);
+    fl_rectbound_border(x, y, w, h, c, bc);
   }
 }
 
