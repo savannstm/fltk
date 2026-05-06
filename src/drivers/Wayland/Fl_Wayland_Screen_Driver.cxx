@@ -21,7 +21,7 @@
 #include <wayland-cursor.h>
 #include "../../../libdecor/build/fl_libdecor.h"
 #include "xdg-shell-client-protocol.h"
-#include "../Posix/Fl_Posix_System_Driver.H"
+#include "../Unix/Fl_Unix_System_Driver.H"
 #include <FL/Fl.H>
 #include <FL/Fl_Image_Surface.H>
 #include <FL/platform.H>
@@ -621,10 +621,10 @@ static int process_wld_key(struct xkb_state *xkb_state, uint32_t key,
   } else if (keycode == 19) {
     for_key_vector = '0';
   }
-  // return the ASCII key corresponding to the layout key name
-  const char* name = xkb_keymap_key_get_name(xkb_state, key);
-  if (name) {
-    int asciiSym = fl_xkb_name_to_ascii(name);
+  // Check for non-Latin keyboard layout. Based on the assumption that the 'A' key of the keyboard
+  // having a non-ASCII keysym indicates a non-Latin layout.
+  if (xkb_state_key_get_one_sym(xkb_state, 38 /* 'A' key on US keyboard */) > 'z') {
+    int asciiSym = Fl_Unix_System_Driver::keycode_to_ascii(keycode);
     if (asciiSym != 0) {
       for_key_vector = asciiSym;
     }
