@@ -285,7 +285,7 @@ std::string Fl_Text_Buffer::text_str() const {
 /*
  Set the text buffer to a new string.
  */
-void Fl_Text_Buffer::text(const char *t)
+void Fl_Text_Buffer::text(const char *t, int len /* = -1 */)
 {
   IS_UTF8_ALIGNED(t)
 
@@ -301,7 +301,8 @@ void Fl_Text_Buffer::text(const char *t)
   free((void *) mBuf);
 
   /* Start a new buffer with a gap of mPreferredGapSize at the end */
-  int insertedLength = (int) strlen(t);
+  int insertedLength = (len < 0) ? (int) strlen(t) : len;
+
   mBuf = (char *) malloc(insertedLength + mPreferredGapSize);
   mLength = insertedLength;
   mGapStart = insertedLength;

@@ -241,7 +241,7 @@ public:
    Replaces the entire contents of the text buffer.
    \param text Text must be valid UTF-8. If null, an empty string is substituted.
    */
-  void text(const char* text);
+  void text(const char* text, int len = -1);
 
   /**
    \brief Get a copy of a part of the text buffer.
