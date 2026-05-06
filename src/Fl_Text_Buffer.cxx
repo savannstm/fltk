@@ -2180,3 +2180,25 @@ int Fl_Text_Buffer::utf8_align(int pos) const
   }
   return pos;
 }
+
+void Fl_Text_Buffer::before_gap(char*& ptr, int& len) const {
+  if (!mLength) {
+    ptr = nullptr;
+    len = 0;
+    return;
+  }
+
+  ptr = mBuf;
+  len = mGapStart;
+}
+
+void Fl_Text_Buffer::after_gap(char*& ptr, int& len) const {
+  if (!mLength) {
+    ptr = nullptr;
+    len = 0;
+    return;
+  }
+
+  ptr = mBuf + mGapEnd;
+  len = mLength - mGapEnd;
+}

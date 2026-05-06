@@ -775,6 +775,9 @@ public:
   void (*transcoding_warning_action)(Fl_Text_Buffer*);
   bool is_word_separator(int pos) const;
 
+  void before_gap(char*& ptr, int& len) const;
+  void after_gap(char*& ptr, int& len) const;
+
 protected:
 
   /**
